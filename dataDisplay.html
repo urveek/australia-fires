@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*"></meta>
+<title>display fire data</title>
+<script src="Libs/jquery.min.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+<link rel="stylesheet" type="text/css" href="Libs/timeAxis.css">
+<script type="text/javascript" src="Libs/timeAxis_new.js"></script>
+<link rel="stylesheet" href="Libs/loading/loading.css">
+<script type="text/javascript" src="Libs/loading/loading.js"></script>
+<style>
+	.cx-time-box ul{
+		margin-top:22px;
+	}
+	.cx-time-round:hover, .cx-time-active .cx-time-round {
+		top: 8px!important;
+	}
+	.cx-time-round {
+		top: 7px!important;
+	}
+</style>
+</head>
+<body style="margin:0">
+<div id='map' style='width: 100%; height: 500px;'></div>
+<div style="width:100%;">
+	<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
+</div>
+
+<script>
+var map ;
+$(function () {
+	initMap();
+})
+function initMap(){
+	mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZ3poaXl1biIsImEiOiJjazgzcnR4OHYwc2loM2RtdDh5bGx3d3N4In0.Od1LKWVtjrYy9cF00-2h7Q';
+	map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/dark-v10',//'mapbox://styles/mapbox/streets-v11',
+		center:{lng: 139.36274000449282, lat: -34.67012606108579},
+		zoom:5.084654241259187
+	});
+	var loadingId=showLoading('loading map');
+	map.on('load',function(){
+		removeLoading(loadingId)
+		initFireData();
+		
+	});
+	setTimeout(function(){
+		
+	},5000);
+	
+}
+function initFireData(){
+	var loadingId=showLoading("loading fire data");
+	var layerId='all-data'+guid();
+	$.getJSON("data/FireHistory-filter.geojson", function(data) {
+		map.addSource(layerId, {       // 添加Source，类型是geojson 
+			'type': 'geojson',
+			data:data
+		});
+		map.addLayer({
+			'id': layerId,
+			'type': 'fill',            // fill类型layer 
+			'source': layerId,         
+			'layout': {},
+			'paint': {
+				'fill-color': 'red',  // fill颜色
+				'fill-opacity': 1,    // fill透明度
+				'fill-outline-color':'#fff'
+			}
+		});
+		removeLoading(loadingId)
+	});
+	
+	
+}
+function showLoading(discription){
+	var id='loading'+guid();
+	$('body').loading({
+		loadingWidth:240,
+		title:'please waiting',
+		name:id,
+		discription:discription==null||discription==""?'':discription,
+		direction:'column',
+		type:'origin',
+		// originBg:'#71EA71',
+		originDivWidth:40,
+		originDivHeight:40,
+		originWidth:6,
+		originHeight:6,
+		smallLoading:false,
+		loadingMaskBg:'rgba(0,0,0,0.2)'
+	});
+	return id;
+}
+function guid() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		return v.toString(16);
+	});
+}
+</script>
+</body>
+</html>

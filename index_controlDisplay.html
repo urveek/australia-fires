@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*"></meta>
+<title>control display layer</title>
+<script src="Libs/jquery.min.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+<link rel="stylesheet" type="text/css" href="Libs/timeAxis.css">
+<script type="text/javascript" src="Libs/timeAxis_new.js"></script>
+<link rel="stylesheet" href="Libs/loading/loading.css">
+<script type="text/javascript" src="Libs/loading/loading.js"></script>
+<style>
+	.cx-time-box ul{
+		margin-top:22px;
+	}
+	.cx-time-round:hover, .cx-time-active .cx-time-round {
+		top: 8px!important;
+	}
+	.cx-time-round {
+		top: 7px!important;
+	}
+	a{
+		color:#01AAED;
+	}	
+	a:hover{
+		cursor: pointer;
+	}
+</style>
+</head>
+<body style="margin:0;overflow:hidden">
+<div id='map' style='width: 100%; height: 500px;'></div>
+<div style="width:100%;height:80px">
+	<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
+</div>
+<div id="toolbar" style="width:100%;display:none;height:40px">
+	<a onclick="startPlay()"><img src="images/play.png"/>play</a>
+	<a onclick="stopPlay()"><img src="images/stop.png"/>stop</a>
+</div>
+<script>
+var map ;
+var oTimeAxiosFun = null;
+var geojsonSourceList=[];
+var fireDateList=[];
+var minFireStartDate,maxFireEndDate;
+$(function () {
+	$("#map").height((window.innerHeight-120)+'px');//set map container height
+	initMap();
+})
+function initMap(){
+	mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZ3poaXl1biIsImEiOiJjazgzcnR4OHYwc2loM2RtdDh5bGx3d3N4In0.Od1LKWVtjrYy9cF00-2h7Q';
+	map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/dark-v10',//'mapbox://styles/mapbox/streets-v11',
+		center:{lng: 144.99722769746234, lat: -31.2145233268038},
+		zoom:4.397826084308351
+	});
+	var loadingId=showLoading('loading map');
+	map.on('load',function(){
+		
+		
+	});
+	setTimeout(function(){
+		removeLoading(loadingId);
+		initFireData();
+	},5000);
+	
+}
+function initFireData(){
+	var loadingId=showLoading('loading FireHistory data');
+	geojsonSourceList=[];
+	var startDate=Number(new Date('2019-09-01'));
+	
+	$.getJSON("data/FireHistory-filter.geojson", function(data) {
+		console.log(data)
+		maxFireEndDate=Number(new Date());
+		$.each(data.features,function(index,feature){
+			var fireDate_start=feature.properties.FIREDATE;
+			var fireDate_end=feature.properties.FIREDATE_END;
+			//console.log(fireDate_end)
+			if(fireDate_start<startDate){
+				return true;
+			}			
+			if(minFireStartDate==null){
+				minFireStartDate=fireDate_start;
+			}else{
+				if(fireDate_start<minFireStartDate){
+					minFireStartDate=fireDate_start;
+				}
+			}
+			
+			var layerId=getGeojsonSource({features:[feature],type:"FeatureCollection"});
+			geojsonSourceList.push({
+				layerId:layerId,
+				startTime:fireDate_start,
+				endTime:fireDate_end,
+				isShow:false
+			});
+		});
+		
+		initTimeLine();
+		
+		//showGeojsonSource(formatDate_str(minFireStartDate));
+		removeLoading(loadingId)
+	});
+}
+function getGeojsonSource(genjsonData){
+	var id=guid();
+	var source=map.addSource(id, {
+		'type': 'geojson',
+		data:genjsonData
+	});
+	return id
+}
+function getPropertiesHtml(properties){
+	var html="";
+	for(var key in properties){
+		var tr="<td>"+key+"</td><td>"+properties[key]+"</td>"
+		html+=("<tr>"+tr+"</tr>")
+	}
+	return "<table>"+html+"</table>";
+}
+var fireDaysCount=0;
+function initTimeLine(){
+	maxFireEndDate=Number(new Date(formatDate_str(maxFireEndDate)))
+	minFireStartDate=Number(new Date(formatDate_str(minFireStartDate)))
+	var timeList=[];
+	fireDaysCount=(maxFireEndDate-minFireStartDate)/(3600*1000*24);
+	for(var i=0;i<=fireDaysCount;i++){
+		var date=minFireStartDate+(3600*1000*24*i)
+		timeList.push({name:'',time:formatDate_str(date)});
+	}
+	var param = {
+		data: timeList,
+		id: 'cxTime',
+		width: '100px',
+		index: 0,
+		selectedPointCallback:function(time,index){
+			//console.log(time)
+			showGeojsonSourceByDateStr(time)
+			playIndex=index;
+		}
+	}
+	oTimeAxiosFun = new oTimeAxios(param);
+	$("#toolbar").show();
+	//display first day data
+	showGeojsonSourceByDateStr(timeList[0].time)
+}
+
+
+var playInterval=null;
+var playIndex=0;
+function startPlay(){
+	console.log(fireDaysCount)
+	if(playInterval!=null){
+		return false;
+	}
+	playInterval=setInterval(function(){
+		
+		if(playIndex==fireDaysCount-1){
+			 clearInterval(playInterval)
+			 playInterval=null;
+		}else{
+			$("#cxTime #next").trigger("click")
+		}		
+		//playIndex++;
+	},1000);
+}
+function stopPlay(){
+	if(playInterval!=null){
+		clearInterval(playInterval);
+		playInterval=null;
+	}
+	
+}
+
+
+
+function showGeojsonSourceByDateStr(curDateStr){
+	$.each(geojsonSourceList,function(index,source){
+		var startDate=source.startTime;
+		var endDate=source.endTime;
+		if(endDate==null){
+			endDate=maxFireEndDate;
+		}
+		var curDate=new Date(curDateStr+" 00:00:00");
+		if(startDate<=curDate&&endDate>=curDate){
+			//firing
+			if(source.isShow==false){
+				showGeojsonSource(source.layerId,"red");
+				geojsonSourceList[index].isShow=true;
+			}
+		}else if(endDate<curDate){
+			//fire endDate
+			if(source.isShow==true){
+				hideGeojsonSource(source.layerId);
+				geojsonSourceList[index].isShow=false;
+			}
+			showGeojsonSource(source.layerId,"green");//light green
+			geojsonSourceList[index].isShow=true;
+		}else{
+			if(source.isShow==true){
+				hideGeojsonSource(source.layerId);
+				geojsonSourceList[index].isShow=false;
+			}
+		}
+	});
+}
+function showGeojsonSource(layerId,color){
+	
+	map.addLayer({
+		'id': layerId,
+		'type': 'fill',            // fill layer 
+		'source': layerId,         
+		'layout': {},
+		'paint': {
+			'fill-color': color,  // fill 
+			'fill-opacity': 0.8,    // fill 
+			//'fill-outline-color':'#fff',
+			//'line-opacity':0.3
+		}
+	});
+}
+function hideGeojsonSource(layerId){
+	try{
+		map.removeLayer(layerId);
+	}catch(e){
+		
+	}
+	
+}
+
+
+
+
+
+
+function formatDate_str(timestame){
+	var date=new Date(timestame);
+	var year=date.getFullYear()
+	var month=date.getMonth()+1;
+	var monthStr=month<10?'0'+month:month;
+	var date=date.getDate();
+	var dateStr=date<10?'0'+date:date;
+	return year+"-"+monthStr+"-"+dateStr;
+}
+
+function showLoading(discription){
+	var id='loading'+guid();
+	$('body').loading({
+		loadingWidth:240,
+		title:'please waiting',
+		name:id,
+		discription:discription==null||discription==""?'':discription,
+		direction:'column',
+		type:'origin',
+		// originBg:'#71EA71',
+		originDivWidth:40,
+		originDivHeight:40,
+		originWidth:6,
+		originHeight:6,
+		smallLoading:false,
+		loadingMaskBg:'rgba(0,0,0,0.2)'
+	});
+	return id;
+}
+function guid() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		return v.toString(16);
+	});
+}
+</script>
+</body>
+</html>
