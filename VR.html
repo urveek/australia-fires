@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.0/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script>
+    <!--for gravity add dynamic-body or static-body -->
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.13.1/dist/aframe-extras.min.js"></script>
+  </head>
+
+  <body>
+    <a-scene physics="debug:true;">
+      <a-sky
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fnightsky.jpg?v=1586477359013"
+      ></a-sky>
+      <a-assets>
+        <a-asset-item
+          id="island"
+          scale="0 10 0"
+          src="https://cdn.glitch.com/5612d843-7976-4a14-891d-0d294246f15a%2FIsland2.glb?1546899916859"
+          response-type="arraybuffer"
+        ></a-asset-item>
+      </a-assets>
+      <!--introduction-->
+<a-text value="Welcome to Camp Summertime!
+               
+               You are a Koala!
+               There's a fire, you must escape!" position="0 1.7 -2.29" rotation="0 10 0" width="3" color="black">
+      </a-text>
+       <a-plane position="1 1.69 -2.69" rotation="0 10 0" scale="2.6 1 1" color="#faaf52">
+      </a-plane> 
+      <!--campsite-->
+      <a-gltf-model
+        id="camp"
+        position="-45 -35 -90"
+        scale="1.2 1.2 1.2"
+        rotation="0 0 0"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fcamp.glb?v=1586475525055" 
+      ></a-gltf-model>
+      <!--intro at campsite-->
+      <a-text value="Unfortunately a camper did not 
+                     extinguish their fires properly
+                     Now there is a big fire -run away!" position="-7 1.7 -40.29" rotation="0 10 0" width="3" color="black">
+      </a-text>
+       <a-plane position="-6 1.69 -40.69" rotation="0 10 0" scale="2.6 1 1" color="#faaf52">
+      </a-plane> 
+      <!--
+      <a-gltf-model
+        id="embers"
+        position="-50 -500 -20"
+       
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fembers.glb?v=1586492822767"
+                    animation-mixer>
+      </a-gltf-model>-->
+      <a-gltf-model
+        id="night-camp"
+        position="-60 -18 -5"
+        rotation="-2 -8 -1"
+        scale="0.08 0.08 0.08"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fcabin-forest.glb?v=1586480170110" > 
+      </a-gltf-model>
+    <a-gltf-model
+        id="forest"
+        position="150 21 -137"
+        scale="0.04 0.04 0.04"
+        rotation="0 90 0"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921" > 
+      </a-gltf-model>
+         <a-gltf-model
+        id="forest2"
+        position="23 16 35"
+        scale="0.04 0.04 0.04"
+        rotation="0 90 0"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921" > 
+      </a-gltf-model>
+         <a-gltf-model
+        id="forest3"
+        position="124 16 85.8"
+        scale="0.04 0.04 0.04"
+        rotation="0 90 0"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921" > 
+      </a-gltf-model>
+      <!--
+      <a-gltf-model
+      id="city"
+      position="-229 -40 850"
+      scale="0.25 0.25 0.25"
+      src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fcity.glb?v=1586550689510">
+      </a-gltf-model>-->
+      <!--adding fires-->
+      <a-gltf-model
+        id="camp-flame"
+        position="-34 -15 -55"
+        scale="6 6 6"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+    <a-gltf-model
+        id="camp-flame2"
+        position="-44 -4 -150"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+       <a-gltf-model
+        id="camp-flame3"
+        position="-13 -4 -126"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+      <a-gltf-model
+        id="camp-flame4"
+        position="22 -4 -118"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+      <a-gltf-model
+        id="camp-flame5"
+        position="-71 -6 -129"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+            <a-gltf-model
+        id="camp-flame6"
+        position="49 -4 -186"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+      <a-gltf-model
+        id="camp-flame7"
+        position="-105 -10 -95"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+ <a-gltf-model
+        id="camp-flame8"
+        position="-110 -10 -130"
+        scale="25 25 25"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028" animation-mixer>
+      </a-gltf-model>
+      
+      <!--
+      <a-gltf-model
+                    id="tree-wind"
+                    scale="0.1 0.1 0.1"
+                    position="-15 -5 0"
+                    src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Ftree-wind.glb?v=1586481541445"
+                    animation-mixer>
+      </a-gltf-model> -->
+      <a-gltf-model src="#island"></a-gltf-model>
+      <!--ww
+      <a-gltf-model
+        id="koala"
+        position="0 20 0"
+        scale="10"
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2F12272_Koala_v1_L3.obj?v=1586475949001"
+      >
+      </a-gltf-model> -->
+    </a-scene>
+  </body>
+</html>
