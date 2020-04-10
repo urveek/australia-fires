@@ -57,18 +57,18 @@ function initFireData(){
 	var loadingId=showLoading("loading fire data");
 	var layerId='all-data'+guid();
 	$.getJSON("data/FireHistory-filter.geojson", function(data) {
-		map.addSource(layerId, {       // 添加Source，类型是geojson 
+		map.addSource(layerId, {       // add Source，type is geojson 
 			'type': 'geojson',
 			data:data
 		});
 		map.addLayer({
 			'id': layerId,
-			'type': 'fill',            // fill类型layer 
+			'type': 'fill',            // fill type is layer 
 			'source': layerId,         
 			'layout': {},
 			'paint': {
-				'fill-color': 'red',  // fill颜色
-				'fill-opacity': 1,    // fill透明度
+				'fill-color': 'red',  // fill color
+				'fill-opacity': 1,    // fill opacity
 				'fill-outline-color':'#fff'
 			}
 		});
