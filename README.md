@@ -9,7 +9,7 @@ Link to map 1 (timelapse map): http://111.230.223.195/mapbox/index_point.html\
 
 Link to map 1 (html file on github): https://github.com/UBC-GEOB472-Spring2020/australia-fires/blob/master/index_point.html
 
-![timelapse](https://user-images.githubusercontent.com/39570002/79040040-8e409a80-7b9a-11ea-97c9-b0ce35111ff7.PNG)
+![timelapse2](https://user-images.githubusercontent.com/39570002/79040757-ad8df680-7b9f-11ea-9023-1cf019275c95.PNG)
 Zoom at Kangaroo Island - lots of fires and wildlife
 
 Map 2
