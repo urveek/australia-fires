@@ -1,0 +1,237 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.0/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script>
+    <!--for gravity add dynamic-body or static-body 
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.13.1/dist/aframe-extras.min.js"></script> -->
+    <script src="public/js/sound.js"></script>
+    <script src="public/js/qz-controls.js"></script>
+  </head>
+
+  <body>
+    <!--
+    <script>
+      AFRAME.registerComponent("songplayer", {});
+    </script-->
+    <script>
+      AFRAME.registerComponent('qz-controls', {});
+    </script>
+    <a-scene
+      physics="debug:true;"
+      fog="type: linear; color: #808080; near:6; far:130"
+    >
+      <a-sky
+        src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fnightsky.jpg?v=1586477359013"
+      ></a-sky>
+      <!--gives red background-->
+      <a-light type="point" intensity="0.35" color="#FF440C"></a-light>
+      <a-assets>
+        <audio
+          id="fire-sound"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2FLarge%20Forest%20Fire%20Sound%20Effect%20(1).mp3?v=1586554772950"
+          preload="auto"
+          autoplay="true"
+          loop="true"
+          on="null"
+          volume="9"
+        ></audio>
+        <a-asset-item
+          id="island"
+          scale="0 10 0"
+          src="https://cdn.glitch.com/5612d843-7976-4a14-891d-0d294246f15a%2FIsland2.glb?1546899916859"
+          response-type="arraybuffer"
+        ></a-asset-item>
+      </a-assets>
+      <!--initialize sounds-->
+      <a-entity 
+        src="#fire-sound"
+        preload="auto"
+        autoplay="true"
+        loop="true"
+        on="null"
+        volume="9"
+      ></a-entity>
+        <a-entity qz-controls
+        id="camera"
+        position="0 -2 0"
+        camera="userHeight:1.6"
+        look-controls
+                wasd-controls= "movementControls: qz-controls, acceleration:200"
+      >
+          </a-entity>
+        <!-- Player 
+niversal-controls="movementControls: qz-keyboard, hmd"
+        <a-entity id="player" dynamic-body player>
+          <a-sphere radius="5"> </a-sphere>
+        </a-entity>-->
+      <!--introduction-->
+      <a-text
+        value="Welcome to Camp Summertime!
+               
+               You are a Koala!
+               There's a fire, you must escape!"
+        position="0 -1.29 -2.29"
+        rotation="0 10 0"
+        width="3"
+        color="black"
+      >
+      </a-text>
+      <a-plane
+        position="1 -1.19 -2.69"
+        rotation="0 10 0"
+        scale="2.6 1 1"
+        color="#faaf52"
+      >
+      </a-plane>
+      <!--campsite-->
+      <a-entity id="surroundings">
+        <a-gltf-model
+          id="camp"
+          position="-45 -35 -90"
+          scale="1.2 1.2 1.2"
+          rotation="0 0 0"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fcamp.glb?v=1586475525055"
+        ></a-gltf-model>
+        <!--intro at campsite-->
+        <a-text
+          value="Unfortunately a camper did not 
+                     extinguish their fires properly
+                     Now there is a big fire -run away!"
+          position="-7 -1.29 -40.29"
+          rotation="0 10 0"
+          width="3"
+          color="black"
+        >
+        </a-text>
+        <a-plane
+          position="-6 -1.19 -40.69"
+          rotation="0 10 0"
+          scale="2.6 1 1"
+          color="#faaf52"
+        >
+        </a-plane>
+        <a-gltf-model
+          id="night-camp"
+          position="-60 -18 -5"
+          rotation="-2 -8 -1"
+          scale="0.08 0.08 0.08"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fcabin-forest.glb?v=1586480170110"
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="forest"
+          position="150 21 -137"
+          scale="0.04 0.04 0.04"
+          rotation="0 90 0"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921"
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="forest2"
+          position="23 13 35"
+          scale="0.04 0.04 0.04"
+          rotation="0 90 0"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921"
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="forest3"
+          position="124 16 85.8"
+          scale="0.04 0.04 0.04"
+          rotation="0 90 0"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fforest-ground.glb?v=1586549502921"
+        >
+        </a-gltf-model>
+      </a-entity>
+      <a-entity id="flames">
+        <a-gltf-model
+          id="camp-flame"
+          position="-34 -15 -55"
+          scale="6 6 6"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame2"
+          position="-44 -4 -150"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame3"
+          position="-13 -4 -126"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame4"
+          position="22 -4 -118"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame5"
+          position="-71 -6 -129"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame6"
+          position="49 -4 -186"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame7"
+          position="-105 -10 -95"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        >
+        </a-gltf-model>
+        <a-gltf-model
+          id="camp-flame8"
+          position="-110 -10 -130"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        ></a-gltf-model>
+                  <a-gltf-model
+          id="camp-flame9"
+          position="55 -10 -111"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        ></a-gltf-model>
+                  <a-gltf-model
+          id="camp-flame10"
+          position="80 -10 -95"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        ></a-gltf-model>
+        <a-gltf-model
+          id="camp-flame11"
+          position="-17 -10 -100"
+          scale="30 25 25"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fflame.glb?v=1586495331028"
+          animation-mixer
+        ></a-gltf-model>
+        
+      </a-entity>
+      <a-gltf-model src="#island"></a-gltf-model>
+    </a-scene>
+  </body>
+</html>
