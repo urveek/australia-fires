@@ -49,14 +49,14 @@ type="text/css"
 </style>
 </head>
 <body style="margin:0;overflow:hidden">
-	<!--Head of page-->
+	<!--页面头部-->
 	<div style='width: 100%;background:#1E9FFF;display: table;'>
 		<div style="float:left" class="page-header">
 			&nbsp;&nbsp;
 			<!--image src="images/fire.png"/-->
 			2019-2020 bush fire occurrences in Australia on Koala populations
 		</div>
-		<!--legend-->
+		<!--图例-->
 		<div style="float:right;">
 			<div class="legend-item">
 				<span style="color:red">●</span>
@@ -68,22 +68,24 @@ type="text/css"
 			</div>
 		</div>
 	</div>
-	<!--Map container-->
+	<!--地图容器-->
 	<div id='map' style='width: 100%; height: 500px;'></div>
-	<!--Time Axis-->
+	<!--时间轴-->
 	<div style="width:100%;height:80px">
 		<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
 	</div>
-	<!--toolbar-->
+	<!--控制按钮-->
 	<div id="toolbar" style="width:100%;display:none;height:40px">
 		<a onclick="startPlay()"><img src="images/play.png"/>play</a>
 		<a onclick="stopPlay()"><img src="images/stop.png"/>stop</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<input id="koalaLayerCheckbox" type="checkbox" />show distribution map of koala
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<button id="fly">Areas of Interest</button>
 	</div>
 <script>
 
-var map ;//Declare the map variables 
+var map ;//声明全局地图变量
 var oTimeAxiosFun = null;
 //var geojsonSourceList=[];
 var geojsonSourceJSON=[];
@@ -91,10 +93,15 @@ var fireDateList=[];
 var minFireStartDate,maxFireEndDate;
 var dateList=[];
 var maxBrightness=0;
-//initialization function
+
+var start = {lat:-37.4, lng:144.7};
+var end = {lat:-35.7752,lng:137.2142};
+var isAtStart = true;
+
+//全局初始化函数
 $(function () {
 	$("#map").height((window.innerHeight-120-90)+'px');//set map container height
-	//Monitor the changes in the Koala distribution layer Checkbox 
+	//监听考拉分布图层复选框的变化
 	$("#koalaLayerCheckbox").change(function() { 
 		var isChecked=$("#koalaLayerCheckbox").prop('checked')
 		if(isChecked){
@@ -103,10 +110,14 @@ $(function () {
 			removeKoalaLayer();
 		}
 	});
-	//Initializa map
+	$("#fly").click(function(){
+		mapFly();
+	});
+	
+	//初始化地图
 	initMap();
 })
-//map initialization fuction
+//地图初始化函数
 function initMap(){
 	mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZ3poaXl1biIsImEiOiJjazgzcnR4OHYwc2loM2RtdDh5bGx3d3N4In0.Od1LKWVtjrYy9cF00-2h7Q';
 	map = new mapboxgl.Map({
@@ -132,7 +143,42 @@ function initMap(){
 	},5000);
 	
 }
-//initialization fire data
+
+function mapFly(){
+	// depending on whether we're currently at point a or b, aim for
+	// point a or b
+	var target = isAtStart ? end : start;
+
+	// and now we're at the opposite point
+	isAtStart = !isAtStart;
+
+	map.flyTo({
+		// These options control the ending camera position: centered at
+		// the target, at zoom level 9, and north up.
+		center: target,
+		zoom: 5,
+		bearing: 0,
+
+		// These options control the flight curve, making it move
+		// slowly and zoom out almost completely before starting
+		// to pan.
+		speed: 0.8, // flying speed
+		curve: 1, // change the speed at which it zooms out
+
+		// This can be any easing function: it takes a number between
+		// 0 and 1 and returns another number between 0 and 1.
+		easing: function (t) {
+			return t;
+		},
+
+		// this animation is considered essential with respect to prefers-reduced-motion
+		essential: true
+
+
+	});
+}
+
+//初始化火情数据
 function initFireData(){
 	var loadingId=showLoading('loading FireHistory data');
 	geojsonSourceList=[];
@@ -140,33 +186,33 @@ function initFireData(){
 	//http://111.230.223.195/
 	$.getJSON("data/point_format.geojson", function(data) {
 		console.log(data)
-		//find the time list of fire occurrence, 2- find the maximum value of BRIGHTNESS
+		//遍历火情数据，1-查找发生火情的时间列表，2-查找BRIGHTNESS最大值
 		$.each(data.features,function(index,feature){	
 			var fireDate_start=feature.properties.FIREDATE;
 			var fireDate_end=feature.properties.FIREDATE_END;
-			//Find a list of times when a fire occurred
+			//查找发生火情的时间列表
 			if(dateList.indexOf(fireDate_start)<0){
 				dateList.push(fireDate_start)
 			}
 			if(geojsonSourceJSON[formatDate_str(fireDate_start)]==null){
 				geojsonSourceJSON[formatDate_str(fireDate_start)]={}
 			}
-			//Find the maximum value of BRIGHTNESS
+			//查找BRIGHTNESS最大值
 			if(feature.properties.BRIGHTNESS>maxBrightness){
 				maxBrightness=feature.properties.BRIGHTNESS;
 			}
 		});
-		//Sort time list, sorting from small to large
+		//排序时间列表，按照从小到大进行排列
 		dateList.sort(function compare(val1,val2){
 			return val1-val2;
 		});
-		//Initialize the timeline
+		//初始化时间轴
 		initTimeLine();
-		//Group by fire date and size
+		//遍历数据，根据火情的日期和大小进行分组
 		$.each(data.features,function(index,feature){
 			var fireDate_start=feature.properties.FIREDATE;
 			var fireDate_end=feature.properties.FIREDATE_END;
-			//Calculate the size of the fire symbol according to the BRIGHTNESS field
+			//根据BRIGHTNESS字段计算火情符号大小
 			var BRIGHTNESS=feature.properties.BRIGHTNESS;
 			BRIGHTNESS=(BRIGHTNESS==null?0:BRIGHTNESS);
 			var point_size=Math.pow(BRIGHTNESS/maxBrightness,0.57) * 10;
@@ -179,6 +225,7 @@ function initFireData(){
 				geojsonSourceJSON[formatDate_str(fireDate_start)][point_size].features.push(feature);
 			}
 		});
+		//遍历添加分组数据的数据源
 		for(var key in geojsonSourceJSON){
 			
 			for(var key2 in geojsonSourceJSON[key]){
@@ -195,7 +242,7 @@ function initFireData(){
 	});
 }
 var fireDaysCount=0;
-//Initialize the timeline function
+//初始化时间轴函数
 function initTimeLine(){
 	var timeList=[];
 	for(var i=0;i<=dateList.length;i++){
@@ -222,7 +269,7 @@ function initTimeLine(){
 
 var playInterval=null;
 var playIndex=0;
-//Start playing timeline function
+//开始播放时间轴函数
 function startPlay(){
 	console.log(fireDaysCount)
 	if(playInterval!=null){
@@ -239,7 +286,7 @@ function startPlay(){
 		//playIndex++;
 	},1000);
 }
-//Stop playing timeline function
+//停止播放时间轴函数
 function stopPlay(){
 	if(playInterval!=null){
 		clearInterval(playInterval);
@@ -247,7 +294,7 @@ function stopPlay(){
 	}
 	
 }
-//Display fire data function according to date
+//根据日期显示火情数据函数
 function showGeojsonSourceByDateStr(curDateStr){
 	
 	for(var key in geojsonSourceJSON){
@@ -282,7 +329,7 @@ function hideGeojsonSource(layerId){
 	}
 }
 
-//Show koala distribution layer
+//显示考拉分布图层
 function showKoalaLayer(){
 	if(map.getSource("koalaLayer")==null){
 		var list=getKoalaData();
@@ -308,14 +355,14 @@ function showKoalaLayer(){
 		}
 	});
 }
-//Hide Koala Distribution Layer
+//隐藏考拉分布图层
 function removeKoalaLayer(){
 	map.removeLayer("koalaLayer")
 }
 
 
 
-//Format date function
+//格式化日期函数
 function formatDate_str(timestame){
 	var date=new Date(timestame);
 	var year=date.getFullYear()
@@ -326,7 +373,7 @@ function formatDate_str(timestame){
 	return year+"-"+monthStr+"-"+dateStr;
 }
 
-//Show loading function
+//显示正在加载函数
 function showLoading(discription){
 	var id='loading'+guid();
 	$('body').loading({
@@ -353,7 +400,7 @@ function guid() {
 	});
 }
 
-//Get koala distribution data
+//获取考拉分布数据
 function getKoalaData(){
 	var data=[
 		[152.0464945,-32.74930278],
