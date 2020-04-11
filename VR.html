@@ -84,16 +84,45 @@
       >
       <!--niversal-controls="movementControls: qz-keyboard, hmd" acceleration:200dyanamic-body-->
       <!-- </a-entity> -->
-      <a-entity id="player" player>
+      <a-entity id="player">
         <a-gltf-model
           id="koala"
           position="0 -8 0"
+                      rotation="0 90 10"
           scale="11 11 11"
-          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final1.glb?v=1586581732886"
+          animation="property: position; dur: 20000; loop: true; to: 150 -8 150"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
         >
-          <a-light type="point" intensity="0.5" color="#c5d3fa"></a-light>
+          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
         </a-gltf-model>
-      </a-entity>
+          <a-gltf-model
+          id="koala2"
+          position="20 -8 5"
+          scale="11 11 11"
+          animation="property: position; dur: 20000; loop: true; to: -150 -8 150"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
+        >
+          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
+          </a-gltf-model>
+            <a-gltf-model
+          id="koala3"
+          position="-45 -8 -90"
+          scale="11 11 11"
+          animation="property: position; dur: 20000; loop: true; to: -150 -8 150"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
+        >
+          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
+              </a-gltf-model>
+              <a-gltf-model
+          id="koala4"
+          position="-20 -8 0"
+                            rotation="0 90 10"
+          scale="11 11 11"
+          src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
+        >
+          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
+              </a-gltf-model>
+        </a-entity>
       <!--introduction-->
       <a-text
         value="Welcome!
