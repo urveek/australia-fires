@@ -28,7 +28,7 @@ type="text/css"
 	}
 	a{
 		color:#01AAED;
-	}	
+	}
 	a:hover{
 		cursor: pointer;
 	}
@@ -36,25 +36,25 @@ type="text/css"
 		height: 50px;
 		line-height: 50px;
 		font-size:20px;
-		color:#ffffff;
+		color:#FFFFFF;
 		font-weight:bold;
-		
+
 	}
 	.legend-item{
 		height:25px;
 		font-size:14px;
 		line-height:25px;
-		color:#fff;
+		color:#FFFFFF;
 	}
 </style>
 </head>
 <body style="margin:0;overflow:hidden">
 	<!--Head of page-->
-	<div style='width: 100%;background:#1E9FFF;display: table;'>
+	<div style='width: 100%;background:#000000;display: table;'>
 		<div style="float:left" class="page-header">
 			&nbsp;&nbsp;
 			<!--image src="images/fire.png"/-->
-			2019-2020 bush fire occurrences in Australia on Koala populations
+			2019-2020 Bush Fire Occurrences in Australia on Koala Populations
 		</div>
 		<!--legend-->
 		<div style="float:right;">
@@ -71,11 +71,11 @@ type="text/css"
 	<!--map background-->
 	<div id='map' style='width: 100%; height: 500px;'></div>
 	<!--time axis-->
-	<div style="width:100%;height:80px">
-		<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
+	<div style="width:100%;height:50;background:#000000;color:#FFFFFF;">
+		<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;color:"></div>
 	</div>
 	<!--toolbar-->
-	<div id="toolbar" style="width:100%;display:none;height:40px">
+	<div id="toolbar" style="width:100%;display:none;height:20;background:#000000;color:#FFFFFF;">
 		<a onclick="startPlay()"><img src="images/play.png"/>play</a>
 		<a onclick="stopPlay()"><img src="images/stop.png"/>stop</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -94,15 +94,15 @@ var minFireStartDate,maxFireEndDate;
 var dateList=[];
 var maxBrightness=0;
 
-var start = {lat:-37.4, lng:144.7};
-var end = {lat:-35.7752,lng:137.2142};
+var start = {lat:-35.7752, lng:137.2142};
+var end = {lat:-27.471,lng:153.023};
 var isAtStart = true;
 
 //initialize all function
 $(function () {
 	$("#map").height((window.innerHeight-120-90)+'px');//set map container height
 	//Monitor the changes in the Koala distribution layer checkbox
-	$("#koalaLayerCheckbox").change(function() { 
+	$("#koalaLayerCheckbox").change(function() {
 		var isChecked=$("#koalaLayerCheckbox").prop('checked')
 		if(isChecked){
 			showKoalaLayer();
@@ -113,7 +113,7 @@ $(function () {
 	$("#fly").click(function(){
 		mapFly();
 	});
-	
+
 	//initialize map
 	initMap();
 })
@@ -135,13 +135,13 @@ function initMap(){
 			}),
 			'top-left'
 		);
-		
+
 	});
 	setTimeout(function(){
 		removeLoading(loadingId);
 		initFireData();
 	},5000);
-	
+
 }
 
 function mapFly(){
@@ -156,7 +156,7 @@ function mapFly(){
 		// These options control the ending camera position: centered at
 		// the target, at zoom level 9, and north up.
 		center: target,
-		zoom: 5,
+		zoom: 8.7,
 		bearing: 0,
 
 		// These options control the flight curve, making it move
@@ -187,7 +187,7 @@ function initFireData(){
 	$.getJSON("data/point_format.geojson", function(data) {
 		console.log(data)
 		//Search the fire data, 1- find the time list of fire occurrence, 2- find the maximum value of BRIGHTNESS
-		$.each(data.features,function(index,feature){	
+		$.each(data.features,function(index,feature){
 			var fireDate_start=feature.properties.FIREDATE;
 			var fireDate_end=feature.properties.FIREDATE_END;
 			//Find a list of times when a fire occurred
@@ -227,7 +227,7 @@ function initFireData(){
 		});
 		//Search the data source to add grouped data
 		for(var key in geojsonSourceJSON){
-			
+
 			for(var key2 in geojsonSourceJSON[key]){
 				var source=map.addSource(key+"-"+key2, {
 					'type': 'geojson',
@@ -236,7 +236,7 @@ function initFireData(){
 				geojsonSourceJSON[key][key2].source=source;
 				geojsonSourceJSON[key].isShow=false;
 			}
-			
+
 		}
 		removeLoading(loadingId)
 	});
@@ -276,13 +276,13 @@ function startPlay(){
 		return false;
 	}
 	playInterval=setInterval(function(){
-		
+
 		if(playIndex==dateList.length-1){
 			 clearInterval(playInterval)
 			 playInterval=null;
 		}else{
 			$("#cxTime #next").trigger("click")
-		}		
+		}
 		//playIndex++;
 	},1000);
 }
@@ -292,11 +292,11 @@ function stopPlay(){
 		clearInterval(playInterval);
 		playInterval=null;
 	}
-	
+
 }
 //Display fire data function according to date
 function showGeojsonSourceByDateStr(curDateStr){
-	
+
 	for(var key in geojsonSourceJSON){
 		if(Number(new Date(key))<=Number(new Date(curDateStr))&&geojsonSourceJSON[key].isShow==false){
 			showGeojsonSource(key,'red');
@@ -305,16 +305,16 @@ function showGeojsonSourceByDateStr(curDateStr){
 			hideGeojsonSource(key);
 			geojsonSourceJSON[key].isShow=false;
 		}
-		
+
 	}
-	
+
 }
 function showGeojsonSource(layerId,color){
 	for(var key in geojsonSourceJSON[layerId]){
 		map.addLayer({
 			'id': layerId+"-"+key,
-			'type': 'circle',            // fill layer 
-			'source': layerId+"-"+key,         
+			'type': 'circle',            // fill layer
+			'source': layerId+"-"+key,
 			'layout': {},
 			'paint': {
 				'circle-radius': Number(key),
@@ -346,8 +346,8 @@ function showKoalaLayer(){
 	}
 	map.addLayer({
 		'id': "koalaLayer",
-		'type': 'circle',            // fill layer 
-		'source': "koalaLayer",         
+		'type': 'circle',            // fill layer
+		'source': "koalaLayer",
 		'layout': {},
 		'paint': {
 			'circle-radius': 2,
