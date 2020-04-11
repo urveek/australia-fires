@@ -1,12 +1,12 @@
 ;(function ($, window, document) {
 	var defaults = {
-		data: [], // show data
-		id: '', // determine dom ID
-		props: { // Parameter name
+		data: [], // 展示数据
+		id: '', // 判定dom ID
+		props: { // 参数反显字段名
 			name: 'name',
 			key: 'time',
 		},
-		index: 0, //selected by default
+		index: 0, //默认当前选中
 		width: '150px',
 		selectedPointCallback:function(index){}
 	};
@@ -21,18 +21,18 @@
 
 	TimeAxis.prototype = {
 
-		// Component initialization
+		// 组件初始化
 		init: function () {
-			// Generate timeline box html
+			// 生成时间轴盒子html
 			this.setTimeBox();
 		},
 
-		//Generate timeline box html
+		// 生成时间轴盒子html
 		setTimeBox: function () {
 			var id = "#" + this.id;
 			var html = '<span id="pre"><</span> <div class="cx-time-box"> <ul></ul></div><span id="next">></span>';
 			$(id).empty().append(html);
-			//Generate timeline html
+			// 生成时间轴html
 			this.setTimeAxisHtml();
 
 			var self = this;
@@ -48,7 +48,7 @@
 			})
 		},
 
-		// Generate timeline html
+		// 生成时间轴html
 		setTimeAxisHtml: function () {
 			var list = this.options.data || [];
 			var html = '';
@@ -73,7 +73,7 @@
 			this.timeAxisMove(0);
 		},
 
-		//Click to move the selected time node
+		//点击连边移动选中时间节点
 		timeAxisMove: function (num){
 			var list = this.options.data || [];
 			this.options.index += num;
@@ -87,20 +87,20 @@
 		    this.timeAxisActive(this.options.index);
 		},
 
-		//Select node to scroll left and right
+		//选中节点左右滚动
 		timeAxisRoll: function (){
 			var list = this.options.data || [];
 
 			var width = parseInt(this.width);
 			var roll = -(this.options.index * width);
-			var widthBox = $('.cx-time-box').width();//Timebox width
-			var widthBox1 = Math.abs(list.length * width); //Actual Total width
+			var widthBox = $('.cx-time-box').width();//时间轴宽度盒子总宽度
+			var widthBox1 = Math.abs(list.length * width); //实际总宽度
 			if(widthBox > widthBox1){
 				return
 			}
-			var i = parseInt(widthBox/width);//Show number of timeline
+			var i = parseInt(widthBox/width);//显示时间轴条数
 			
-			var timeAxisLast = this.options.index == list.length -1//Whether the last parameter is selected
+			var timeAxisLast = this.options.index == list.length -1//是否选中的最后一个参数
 
 			if(timeAxisLast){
 				roll =  -(widthBox1 - widthBox);
@@ -116,7 +116,7 @@
 			});
 		},
 
-		//Swipe back and forth and click events
+		// 前后滑动点击事件
 		timeAxisActive: function (num) {
 			$('.cx-round-box').removeClass('cx-time-active');
 			$('.cx-round-box' + this.options.index).addClass('cx-time-active');

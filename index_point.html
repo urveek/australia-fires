@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Access-Control-Allow-Origin" content="*"></meta>
-<title>control display layer</title>
+<title>fire data display</title>
 <script src="Libs/jquery.min.js"></script>
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
@@ -32,19 +32,50 @@ type="text/css"
 	a:hover{
 		cursor: pointer;
 	}
+	.page-header{
+		height: 50px;
+		line-height: 50px;
+		font-size:20px;
+		color:#ffffff;
+		font-weight:bold;
+		
+	}
+	.legend-item{
+		height:25px;
+		font-size:14px;
+		line-height:25px;
+		color:#fff;
+	}
 </style>
 </head>
 <body style="margin:0;overflow:hidden">
-<div id='map' style='width: 100%; height: 500px;'></div>
-<div style="width:100%;height:80px">
-	<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
-</div>
-<div id="toolbar" style="width:100%;display:none;height:40px">
-	<a onclick="startPlay()"><img src="images/play.png"/>play</a>
-	<a onclick="stopPlay()"><img src="images/stop.png"/>stop</a>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input id="koalaLayerCheckbox" type="checkbox" />show distribution map of koala
-</div>
+	<div style='width: 100%;background:#1E9FFF;display: table;'>
+		<div style="float:left" class="page-header">
+			&nbsp;&nbsp;
+			<!--image src="images/fire.png"/-->
+			2019-2020 bush fire occurrences in Australia on Koala populations
+		</div>
+		<div style="float:right;">
+			<div class="legend-item">
+				<span style="color:red">●</span>
+				fire
+			</div>
+			<div class="legend-item">
+				<span style="color:yellow">●</span>
+				distribution of koala
+			</div>
+		</div>
+	</div>
+	<div id='map' style='width: 100%; height: 500px;'></div>
+	<div style="width:100%;height:80px">
+		<div class="cx-time-main" id="cxTime" style="width:90%;margin-left:50px;"></div>
+	</div>
+	<div id="toolbar" style="width:100%;display:none;height:40px">
+		<a onclick="startPlay()"><img src="images/play.png"/>play</a>
+		<a onclick="stopPlay()"><img src="images/stop.png"/>stop</a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input id="koalaLayerCheckbox" type="checkbox" />show distribution map of koala
+	</div>
 <script>
 
 var map ;
@@ -54,8 +85,9 @@ var geojsonSourceJSON=[];
 var fireDateList=[];
 var minFireStartDate,maxFireEndDate;
 var dateList=[];
+var maxBrightness=0;
 $(function () {
-	$("#map").height((window.innerHeight-120)+'px');//set map container height
+	$("#map").height((window.innerHeight-120-90)+'px');//set map container height
 	$("#koalaLayerCheckbox").change(function() { 
 		var isChecked=$("#koalaLayerCheckbox").prop('checked')
 		if(isChecked){
@@ -80,7 +112,8 @@ function initMap(){
 			new MapboxGeocoder({
 				accessToken: mapboxgl.accessToken,
 				mapboxgl: mapboxgl
-			})
+			}),
+			'top-left'
 		);
 		
 	});
@@ -90,27 +123,48 @@ function initMap(){
 	},5000);
 	
 }
-function onBack(data){debugger}
+
 function initFireData(){
 	var loadingId=showLoading('loading FireHistory data');
 	geojsonSourceList=[];
 	fireDate_start=[];
 	//http://111.230.223.195/
-	$.getJSON("data/point_format.geojson?jsoncallback=a", function(data) {
+	$.getJSON("data/point_format.geojson", function(data) {
 		console.log(data)
 		
-		//maxFireEndDate=Number(new Date());
-		$.each(data.features,function(index,feature){
+		$.each(data.features,function(index,feature){	
 			var fireDate_start=feature.properties.FIREDATE;
 			var fireDate_end=feature.properties.FIREDATE_END;
-			//console.log(fireDate_end)
+			
 			if(dateList.indexOf(fireDate_start)<0){
 				dateList.push(fireDate_start)
 			}
 			if(geojsonSourceJSON[formatDate_str(fireDate_start)]==null){
-				geojsonSourceJSON[formatDate_str(fireDate_start)]={features:[feature],type:"FeatureCollection"}
+				geojsonSourceJSON[formatDate_str(fireDate_start)]={}
+			}
+			if(feature.properties.BRIGHTNESS>maxBrightness){
+				maxBrightness=feature.properties.BRIGHTNESS;
+			}
+		});
+		dateList.sort(function compare(val1,val2){
+			return val1-val2;
+		});
+		initTimeLine();
+		
+		$.each(data.features,function(index,feature){
+			var fireDate_start=feature.properties.FIREDATE;
+			var fireDate_end=feature.properties.FIREDATE_END;
+			//console.log(fireDate_end)
+			var BRIGHTNESS=feature.properties.BRIGHTNESS;
+			BRIGHTNESS=(BRIGHTNESS==null?0:BRIGHTNESS);
+			var point_size=Math.pow(BRIGHTNESS/maxBrightness,0.57) * 10;
+			point_size=Math.round(point_size);
+			point_size=Math.pow(point_size,5)/10000
+			point_size=Math.round(point_size)+"";
+			if(geojsonSourceJSON[formatDate_str(fireDate_start)][point_size]==null){
+				geojsonSourceJSON[formatDate_str(fireDate_start)][point_size]={features:[feature],type:"FeatureCollection"}
 			}else{
-				geojsonSourceJSON[formatDate_str(fireDate_start)].features.push(feature);
+				geojsonSourceJSON[formatDate_str(fireDate_start)][point_size].features.push(feature);
 			}
 			/*var layerId=getGeojsonSource({features:[feature],type:"FeatureCollection"});
 			geojsonSourceList.push({
@@ -121,18 +175,18 @@ function initFireData(){
 			});*/
 		});
 		for(var key in geojsonSourceJSON){
-			var source=map.addSource(key, {
-				'type': 'geojson',
-				data:geojsonSourceJSON[key]
-			});
-			geojsonSourceJSON[key].source=source;
-			geojsonSourceJSON[key].isShow=false;
+			
+			for(var key2 in geojsonSourceJSON[key]){
+				var source=map.addSource(key+"-"+key2, {
+					'type': 'geojson',
+					data:geojsonSourceJSON[key][key2]
+				});
+				geojsonSourceJSON[key][key2].source=source;
+				geojsonSourceJSON[key].isShow=false;
+			}
+			
 		}
-		dateList.sort(function compare(val1,val2){
-			return val1-val2;
-		});
 		
-		initTimeLine();
 		
 		//showGeojsonSource(formatDate_str(minFireStartDate));
 		removeLoading(loadingId)
@@ -167,7 +221,7 @@ function initTimeLine(){
 		width: '100px',
 		index: 0,
 		selectedPointCallback:function(time,index){
-			//console.log(time)
+			console.log(time)
 			showGeojsonSourceByDateStr(time)
 			playIndex=index;
 		}
@@ -246,27 +300,29 @@ function showGeojsonSourceByDateStr(curDateStr){
 		}
 		
 	}
-	if(geojsonSourceJSON[curDateStr].isShow==false){
-		
-		
-	}
+	
 }
 function showGeojsonSource(layerId,color){
-	
-	map.addLayer({
-		'id': layerId,
-		'type': 'circle',            // fill layer 
-		'source': layerId,         
-		'layout': {},
-		'paint': {
-			'circle-radius': 1,
-			'circle-color': color
-		}
-	});
+	for(var key in geojsonSourceJSON[layerId]){
+		map.addLayer({
+			'id': layerId+"-"+key,
+			'type': 'circle',            // fill layer 
+			'source': layerId+"-"+key,         
+			'layout': {},
+			'paint': {
+				'circle-radius': Number(key),
+				'circle-color': color
+			}
+		});
+	}
 }
 function hideGeojsonSource(layerId){
+	for(var key in geojsonSourceJSON[layerId]){
+		map.removeLayer(layerId+"-"+key);
+	}
+	
 	try{
-		map.removeLayer(layerId);
+		
 	}catch(e){
 		
 	}
