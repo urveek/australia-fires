@@ -17,9 +17,12 @@
         score = score + 1
         clearTimeout(resetId)
         resetId = setTimeout(resetBall,2000)   }
-})
+}) 
  -->
-    <a-scene physics="debug:true;" fog="type: linear; color: #808080; near:6; far:130">
+    <a-scene
+      physics="debug:true;"
+      fog="type: linear; color: #808080; near:6; far:130"
+    >
       <a-sky
         src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fnightsky.jpg?v=1586477359013"
       ></a-sky>
@@ -88,51 +91,52 @@
         <a-gltf-model
           id="koala"
           position="0 -8 0"
-                      rotation="0 90 10"
+          rotation="0 90 10"
           scale="11 11 11"
           animation="property: position; dur: 20000; loop: true; to: 150 -8 150"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
         >
-          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
+          <a-light type="point" intensity="0.3" color="#c5d3fa"></a-light>
         </a-gltf-model>
-          <a-gltf-model
+        <a-gltf-model
           id="koala2"
           position="20 -8 5"
-          scale="11 11 11"
           animation="property: position; dur: 20000; loop: true; to: -150 -8 150"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
+          sound="src: https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2FKoala%20Gets%20Kicked%20Out%20Of%20Tree%20and%20Cries!%20(1).mp3?v=1586649345763; autoplay: true; volume: 7; positional: true; refDistance: 1; rolloffFactor: 1;"
+          scale="11 11 11"
         >
-          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
-          </a-gltf-model>
-            <a-gltf-model
+          <a-light type="point" intensity="0.3" color="#c5d3fa"></a-light>
+        </a-gltf-model>
+        <a-gltf-model
           id="koala3"
           position="-45 -8 -90"
           scale="11 11 11"
           animation="property: position; dur: 20000; loop: true; to: -150 -8 150"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
         >
-          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
-              </a-gltf-model>
-              <a-gltf-model
+          <a-light type="point" intensity="0.3" color="#c5d3fa"></a-light>
+        </a-gltf-model>
+        <a-gltf-model
           id="koala4"
           position="-20 -8 0"
-                            rotation="0 90 10"
+          rotation="0 90 10"
           scale="11 11 11"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
         >
-          <a-light type="point" intensity="0.1" color="#c5d3fa"></a-light>
-              </a-gltf-model>
-        </a-entity>
+          <a-light type="point" intensity="0.3" color="#c5d3fa"></a-light>
+        </a-gltf-model>
+      </a-entity>
       <!--introduction-->
       <a-text
         value="Welcome!
                You are a Koala!
-
+               
                You are surrounded by a bushfire
                Hurry up and escape!
-
+               
                Don't run through the fires!!
-
+               
                Controls:
                WASD to move, hold W to go up and down"
         position="0.25 -4.4 -2.29"
@@ -151,7 +155,7 @@
       <!--note on eucalyptus trees-->
       <a-text
         value="Unfortunately you cannot jump this high
-               Usually your first instinct would be to
+               Usually your first instinct would be to 
                climb a eucalyptus tree, should you?"
         position="51.5 -4.5 -7"
         rotation="0 -90 0"
@@ -195,7 +199,7 @@
         ></a-gltf-model>
         <!--intro at campsite-->
         <a-text
-          value="Unfortunately a camper did not
+          value="Unfortunately a camper did not 
                      extinguish their fires properly
                      Now there is a big fire - turn away!"
           position="-7 -4.29 -40.29"
@@ -880,5 +884,37 @@
       </a-entity>
       <a-gltf-model src="#island"></a-gltf-model>
     </a-scene>
+    <script>
+      var permission = Notification.permission;
+
+      function notifyMe() {
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+          console.log("This browser does not support desktop notification");
+        }
+
+        // Let's check whether notification permissions have alredy been granted
+        else if (Notification.permission === "granted") {
+          // If it's okay let's create a notification
+          var notification = new Notification("Hi there!");
+        }
+
+        // Otherwise, we need to ask the user for permission
+        else if (
+          Notification.permission !== "denied" ||
+          Notification.permission === "default"
+        ) {
+          Notification.requestPermission(function(permission) {
+            // If the user accepts, let's create a notification
+            if (permission === "granted") {
+              var notification = new Notification("Hi there!");
+            }
+          });
+        }
+
+        // At last, if the user has denied notifications, and you
+        // want to be respectful there is no need to bother them any more.
+      }
+    </script>
   </body>
 </html>
