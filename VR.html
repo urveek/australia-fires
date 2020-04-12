@@ -33,7 +33,7 @@
         <audio
           id="fire-sound"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2FLarge%20Forest%20Fire%20Sound%20Effect%20(1).mp3?v=1586554772950"
-          preload="auto"
+          preload="true"
           autoplay="true"
           loop="true"
           on="null"
@@ -50,7 +50,7 @@
       <!--initialize sounds-->
       <a-entity
         src="#fire-sound"
-        preload="auto"
+        preload="true"
         autoplay="true"
         loop="true"
         on="null"
@@ -103,7 +103,7 @@
           position="20 -8 5"
           animation="property: position; dur: 20000; loop: true; to: -150 -8 150"
           src="https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2Fkoala_final2.glb?v=1586601864662"
-          sound="src: https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2FKoala%20Gets%20Kicked%20Out%20Of%20Tree%20and%20Cries!%20(1).mp3?v=1586649345763; autoplay: true; volume: 7; positional: true; refDistance: 1; rolloffFactor: 1;"
+          sound="src: https://cdn.glitch.com/1d3df0ab-13ce-41ac-b5c5-28d0b03b0006%2FKoala%20Gets%20Kicked%20Out%20Of%20Tree%20and%20Cries!%20(1).mp3?v=1586649345763; autoplay: true; volume: 7; positional: true; refDistance: 1; rolloffFactor: 1; preload: true;"
           scale="11 11 11"
         >
           <a-light type="point" intensity="0.3" color="#c5d3fa"></a-light>
@@ -918,3 +918,4 @@
     </script>
   </body>
 </html>
+
